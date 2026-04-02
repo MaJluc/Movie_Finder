@@ -54,22 +54,32 @@ def safe_int_input(text, min_val=None, max_val=None, max_attempts=3):
 
 # Функция пагинации результатов поиска
 def paginate(results_func, count_func, params):
-    offset = 0  # Смещение для LIMIT
-    limit = 10  # Размер страницы
-    total = count_func(*params)  # Общее количество результатов
+    offset = 0
+    limit = 10
+    total = count_func(*params)
     print(f"\nВсего найдено: {total}")
 
     while True:
-        results = results_func(*params, limit, offset)  # Получаем результаты
+        results = results_func(*params, limit, offset)
         if not results:
             print("Нет результатов")
             break
-        print_table(results)  # Красивый вывод в таблицу
-        offset += limit  # Сдвигаем страницу
-        if offset >= total:  # Если показали все результаты
+
+        # Локализуем ключи для фильма
+        localized_results = []
+        for r in results:
+            localized_results.append({
+                'Название': r['title'],
+                'Год релиза': r['release_year']
+            })
+
+        print_table(localized_results)
+
+        offset += limit
+        if offset >= total:
             print("\nЭто были все результаты")
             break
-        cont = input("Показать ещё? (y/n): ")  # Спрашиваем пользователя
+        cont = input("Показать ещё? (y/n): ")
         if cont.lower() != 'y':
             break
 
