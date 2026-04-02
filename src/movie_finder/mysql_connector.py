@@ -1,16 +1,16 @@
 # Работа с MySQL: поиск фильмов и получение информации о жанрах и годах
 
-import pymysql  # Для подключения к MySQL
-from dotenv import load_dotenv  # Для чтения .env
+import pymysql
+from dotenv import load_dotenv
 import os
-from decorators import handle_db_errors  # Импортируем декоратор для обработки ошибок
+from decorators import handle_db_errors
 
 # Загружаем переменные окружения
 load_dotenv()
-MYSQL_HOST = os.getenv("MYSQL_HOST")       # Хост MySQL
-MYSQL_USER = os.getenv("MYSQL_USER")       # Имя пользователя MySQL
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")  # Пароль пользователя
-MYSQL_DB = os.getenv("MYSQL_DB")           # Имя базы данных
+MYSQL_HOST = os.getenv("MYSQL_HOST")
+MYSQL_USER = os.getenv("MYSQL_USER")
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+MYSQL_DB = os.getenv("MYSQL_DB")
 
 # =============================================
 # Создание подключения к MySQL
@@ -21,11 +21,11 @@ def get_connection():
     Создает соединение с MySQL
     """
     return pymysql.connect(
-        host=MYSQL_HOST,                      # Хост
-        user=MYSQL_USER,                      # Пользователь
-        password=MYSQL_PASSWORD,              # Пароль
-        database=MYSQL_DB,                    # База данных
-        cursorclass=pymysql.cursors.DictCursor  # Курсор возвращает словари
+        host=MYSQL_HOST,
+        user=MYSQL_USER,
+        password=MYSQL_PASSWORD,
+        database=MYSQL_DB,
+        cursorclass=pymysql.cursors.DictCursor
     )
 
 # =============================================
@@ -33,11 +33,8 @@ def get_connection():
 # =============================================
 @handle_db_errors
 def get_genres_with_years():
-    """
-    Возвращает список кортежей (жанр, min_year, max_year)
-    """
-    conn = get_connection()  # Подключаемся
-    with conn.cursor() as cur:  # Создаем курсор
+    conn = get_connection()
+    with conn.cursor() as cur:
         # SQL-запрос для получения жанров и диапазона годов
         cur.execute("""
             SELECT g.name AS genre,
@@ -49,20 +46,15 @@ def get_genres_with_years():
             GROUP BY g.name
             ORDER BY g.name
         """)
-        result = cur.fetchall()  # Получаем все результаты
-    conn.close()  # Закрываем соединение
-    return [(r['genre'], r['min_year'], r['max_year']) for r in result]  # Возвращаем список кортежей
+        result = cur.fetchall()
+    conn.close()
+    return [(r['genre'], r['min_year'], r['max_year']) for r in result]
 
 # =============================================
 # Поиск фильмов по ключевому слову
 # =============================================
 @handle_db_errors
 def search_by_keyword(keyword, limit, offset):
-    """
-    keyword: ключевое слово
-    limit: количество результатов
-    offset: смещение для пагинации
-    """
     conn = get_connection()
     with conn.cursor() as cur:
         cur.execute("""
@@ -96,13 +88,6 @@ def count_by_keyword(keyword):
 # =============================================
 @handle_db_errors
 def search_by_genre_and_year(genre, start, end, limit, offset):
-    """
-    genre: жанр
-    start: начальный год
-    end: конечный год
-    limit: количество результатов
-    offset: смещение
-    """
     conn = get_connection()
     with conn.cursor() as cur:
         cur.execute("""
@@ -123,9 +108,6 @@ def search_by_genre_and_year(genre, start, end, limit, offset):
 # =============================================
 @handle_db_errors
 def count_by_genre_and_year(genre, start, end):
-    """
-    Возвращает количество фильмов в жанре за выбранный диапазон
-    """
     conn = get_connection()
     with conn.cursor() as cur:
         cur.execute("""

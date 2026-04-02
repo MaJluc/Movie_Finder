@@ -1,15 +1,10 @@
 # Форматирование и вывод данных в виде таблиц
 
-from tabulate import tabulate  # Для красивого вывода таблиц
+from tabulate import tabulate
 
-# =============================================
-# Вывод таблицы с любыми результатами
-# =============================================
+
 def print_table(results):
-    """
-    results: список словарей, где ключи — названия колонок
-    """
-    if not results:  # Если пустой список
+    if not results:
         print("Нет данных для отображения")
         return
-    print(tabulate(results, headers="keys", tablefmt="grid"))  # Вывод таблицы
+    print(tabulate(results, headers="keys", tablefmt="grid"))

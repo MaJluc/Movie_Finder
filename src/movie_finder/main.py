@@ -24,16 +24,10 @@ def print_menu():
 
 # Вспомогательная функция безопасного ввода числа с ограничением попыток
 def safe_int_input(text, min_val=None, max_val=None, max_attempts=3):
-    """
-    Безопасный ввод числа с ограничением попыток.
-    - text: сообщение для пользователя
-    - min_val, max_val: допустимый диапазон
-    - max_attempts: максимальное число неверных вводов
-    """
-    attempts = 0  # счётчик попыток
+    attempts = 0
     while True:
-        value = input(text)  # читаем ввод пользователя
-        if not value.isdigit():  # если не число
+        value = input(text)
+        if not value.isdigit():
             attempts += 1
             print("❌ Введите число")
         else:
@@ -45,12 +39,11 @@ def safe_int_input(text, min_val=None, max_val=None, max_attempts=3):
                 attempts += 1
                 print(f"❌ Максимум: {max_val}")
             else:
-                return value  # корректный ввод, возвращаем число
+                return value
 
-        # Проверка количества неудачных попыток
         if attempts >= max_attempts:
             print("⚠️ Слишком много неверных попыток. Возврат в главное меню.")
-            return None  # возвращаем None при превышении попыток
+            return None
 
 # Функция пагинации результатов поиска
 def paginate(results_func, count_func, params):
@@ -65,7 +58,6 @@ def paginate(results_func, count_func, params):
             print("Нет результатов")
             break
 
-        # Локализуем ключи для фильма
         table = []
         for r in results:
             table.append({
@@ -85,13 +77,6 @@ def paginate(results_func, count_func, params):
 
 # Функция вывода популярных запросов
 def display_top_queries(queries):
-    """
-    Красивый вывод популярных запросов.
-    Преобразует данные из MongoDB в читаемую таблицу:
-    - ключевое слово
-    - количество
-    Работает независимо от того, _id - словарь или строка.
-    """
     print("\n=== Популярные запросы ===")
     if not queries:
         print("Нет данных")
@@ -103,10 +88,8 @@ def display_top_queries(queries):
             continue
 
         _id = q.get('_id')
-        # Если _id - словарь с ключом 'keyword'
         if isinstance(_id, dict):
             keyword_val = _id.get('keyword', '-')
-        # Если _id - просто строка
         elif isinstance(_id, str):
             keyword_val = _id
         else:
@@ -127,8 +110,9 @@ def display_last_queries(queries):
     for q in queries:
         if not isinstance(q, dict):  # Пропускаем, если не словарь
             continue
-        search_type = q.get('search_type', '-')  # Тип поиска
-        raw_ts = q.get('timestamp', '-')  # Время запроса
+        search_type = q.get('search_type', '-')
+        raw_ts = q.get('timestamp', '-')
+
         # форматируем timestamp без микросекунд
         if isinstance(raw_ts, datetime):
             timestamp = raw_ts.strftime("%Y-%m-%d %H:%M:%S")
@@ -148,16 +132,16 @@ def display_last_queries(queries):
         else:
             param_str = '-'
 
-        count_val = q.get('results_count', '-')  # Количество результатов
+        count_val = q.get('results_count', '-')
         table.append({'тип_поиска': search_type, 'параметры': param_str, 'количество': count_val, 'время': timestamp})
     print_table(table)
 
-# Основная функция
+
 def main():
-    print("Проверка: программа запустилась")  # Отладочная строка
+    print("Проверка: программа запустилась")
     while True:
         print_menu()  # Показываем меню
-        choice = input("Выберите пункт: ")  # Выбор пользователя
+        choice = input("Выберите пункт: ")
 
         if choice == '1':
             keyword = input("Введите ключевое слово: ")
@@ -182,12 +166,12 @@ def main():
             # Выбор года "от"
             start = safe_int_input(f"От года ({min_year}-{max_year}): ", min_year, max_year)
             if start is None:
-                continue  # слишком много попыток, возвращаемся в меню
+                continue
 
             # Выбор года "до"
             end = safe_int_input(f"До года ({min_year}-{max_year}): ", min_year, max_year)
             if end is None:
-                continue  # слишком много попыток, возвращаемся в меню
+                continue
 
             # Если пользователь перепутал годы, меняем местами
             if start > end:
@@ -201,7 +185,7 @@ def main():
 
         elif choice == '3':
             queries = get_top_queries(5)  # Получаем 5 популярных
-            display_top_queries(queries)  # Теперь безопасно, ошибки нет
+            display_top_queries(queries)
 
         elif choice == '4':
             queries = get_last_queries(5)  # Получаем 5 последних
