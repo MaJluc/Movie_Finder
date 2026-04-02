@@ -66,14 +66,14 @@ def paginate(results_func, count_func, params):
             break
 
         # Локализуем ключи для фильма
-        localized_results = []
+        table = []
         for r in results:
-            localized_results.append({
+            table.append({
                 'Название': r['title'],
                 'Год релиза': r['release_year']
             })
 
-        print_table(localized_results)
+        print_table(table)
 
         offset += limit
         if offset >= total:
